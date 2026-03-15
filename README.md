@@ -46,7 +46,7 @@ A production-ready platform dedicated to the Indian Knowledge Systems (IKS). Thi
    VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
    VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
    VITE_FIREBASE_APP_ID=your_firebase_app_id
-   VITE_ANTIGRAVITY_API_KEY=your_antigravity_api_key
+   VITE_AI_API_KEY=your_antigravity_api_key
    ```
 
 4. **Run the development server**
