@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, serverTimestamp, query, where } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -43,18 +43,22 @@ export const logoutUser = async () => {
 // Firestore functions for study_materials
 export const saveStudyMaterial = async (data) => {
   try {
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error("Missing permissions: User must be logged in to save materials");
+    }
     const docRef = await addDoc(collection(db, "study_materials"), {
       ...data,
+      userId: user.uid,
       createdAt: serverTimestamp()
     });
     return docRef.id;
   } catch (error) {
-    console.error("Error saving study material", error);
     throw error;
   }
 };
 
-export const getStudyMaterial = async (id) => {
+export const getStudyMaterial = async (id?: string) => {
   try {
     if (id) {
       const docRef = doc(db, "study_materials", id);
@@ -65,11 +69,15 @@ export const getStudyMaterial = async (id) => {
         return null;
       }
     } else {
-      const querySnapshot = await getDocs(collection(db, "study_materials"));
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("Missing permissions: User must be logged in to fetch materials");
+      }
+      const q = query(collection(db, "study_materials"), where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
   } catch (error) {
-    console.error("Error getting study material", error);
     throw error;
   }
 };
@@ -80,7 +88,6 @@ export const updateStudyMaterial = async (id, data) => {
     await updateDoc(docRef, data);
     return true;
   } catch (error) {
-    console.error("Error updating study material", error);
     throw error;
   }
 };
@@ -91,7 +98,6 @@ export const deleteStudyMaterial = async (id) => {
     await deleteDoc(docRef);
     return true;
   } catch (error) {
-    console.error("Error deleting study material", error);
     throw error;
   }
 };

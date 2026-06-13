@@ -26,7 +26,7 @@ const StudyMaterials: React.FC = () => {
       userMaterials.sort((a: any, b: any) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
       setMaterials(userMaterials);
     } catch (err) {
-      console.error(err);
+      // Intentionally suppressing internal errors in production
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,6 @@ const StudyMaterials: React.FC = () => {
       await deleteStudyMaterial(id);
       setMaterials(materials.filter(m => m.id !== id));
     } catch (err) {
-      console.error(err);
       alert('Failed to delete.');
     }
   };

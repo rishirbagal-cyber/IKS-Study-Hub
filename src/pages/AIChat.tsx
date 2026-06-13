@@ -30,9 +30,14 @@ const AIChat: React.FC = () => {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsTyping(true);
 
-    const response = await generateStudyContent(userMessage);
-    setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-    setIsTyping(false);
+    try {
+      const response = await generateStudyContent(userMessage);
+      setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again later." }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleSaveMaterial = async (content: string) => {
@@ -46,7 +51,6 @@ const AIChat: React.FC = () => {
       });
       alert('Study material saved successfully!');
     } catch (err) {
-      console.error(err);
       alert('Failed to save study material.');
     }
   };
